@@ -4,6 +4,8 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Layers, Map, MoreVertical, Share2
 import ViewerWrapper from './ViewerWrapper';
 import manifestData from '../data/manifest.json';
 
+import { SCENE_OVERRIDES } from '../data/scene_overrides';
+
 export default function EditorLayout() {
     const { blockId } = useParams();
     const navigate = useNavigate();
@@ -12,6 +14,23 @@ export default function EditorLayout() {
     const block = useMemo(() =>
         manifestData.blocks.find(b => b.id === blockId),
         [blockId]);
+
+    const scenes = useMemo(() => {
+        if (!block) return [];
+
+        const overrides = SCENE_OVERRIDES[block.id];
+        if (overrides) {
+            return overrides.map(override => {
+                const originalScene = block.labs.find(lab => lab.id === override.id);
+                if (originalScene) {
+                    return { ...originalScene, label: override.label };
+                }
+                return null;
+            }).filter((scene): scene is NonNullable<typeof scene> => scene !== null);
+        }
+
+        return block.labs;
+    }, [block]);
 
     const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -25,7 +44,7 @@ export default function EditorLayout() {
         return <div className="flex items-center justify-center h-screen text-white">Block not found</div>;
     }
 
-    const currentScene = block.labs[currentSceneIndex];
+    const currentScene = scenes[currentSceneIndex];
 
     return (
         <div className="h-screen flex flex-col bg-background overflow-hidden">
@@ -67,18 +86,18 @@ export default function EditorLayout() {
                     <div className="p-4 border-b border-white/5 flex items-center justify-between">
                         <h2 className="font-medium text-sm flex items-center gap-2">
                             <Layers size={16} className="text-primary" />
-                            Scenes ({block.labs.length})
+                            Scenes ({scenes.length})
                         </h2>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
-                        {block.labs.map((scene, idx) => (
+                        {scenes.map((scene, idx) => (
                             <div
                                 key={scene.id}
                                 onClick={() => setCurrentSceneIndex(idx)}
                                 className={`p-2 rounded-lg cursor-pointer transition-all border ${currentSceneIndex === idx
-                                        ? 'bg-primary/10 border-primary/50'
-                                        : 'hover:bg-white/5 border-transparent'
+                                    ? 'bg-primary/10 border-primary/50'
+                                    : 'hover:bg-white/5 border-transparent'
                                     }`}
                             >
                                 <div className="aspect-video rounded bg-surface-light mb-2 overflow-hidden relative">
@@ -130,38 +149,7 @@ export default function EditorLayout() {
                     </div>
                 </div>
 
-                {/* Right Sidebar - Inspector (Optional/Collapsible) */}
-                <div className="w-72 bg-surface border-l border-white/5 hidden lg:flex flex-col">
-                    <div className="p-4 border-b border-white/5">
-                        <h2 className="font-medium text-sm">Properties</h2>
-                    </div>
-                    <div className="p-4 space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs text-text-secondary uppercase font-semibold tracking-wider">Scene Name</label>
-                            <input
-                                type="text"
-                                value={currentScene?.label}
-                                readOnly
-                                className="input-field"
-                            />
-                        </div>
 
-                        <div className="space-y-2">
-                            <label className="text-xs text-text-secondary uppercase font-semibold tracking-wider">Initial View</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                <button className="btn-secondary text-xs">Set Current</button>
-                                <button className="btn-secondary text-xs">Reset</button>
-                            </div>
-                        </div>
-
-                        <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
-                            <h3 className="text-primary text-sm font-medium mb-1">Pro Tip</h3>
-                            <p className="text-xs text-text-muted">
-                                Hold 'Ctrl' while dragging to rotate the view without moving the hotspot.
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );
