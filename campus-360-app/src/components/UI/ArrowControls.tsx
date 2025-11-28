@@ -6,10 +6,6 @@ export const ArrowControls = () => {
     const { zoomCamera, isAutoRotating, setAutoRotation, startRotation, stopRotation, nextImage, previousImage } = useTourState();
     const [showInfo, setShowInfo] = useState(false);
 
-
-
-
-
     const arrowButtonStyle = {
         background: 'rgba(0, 0, 0, 0.6)',
         border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -86,54 +82,87 @@ export const ArrowControls = () => {
                 {/* Divider */}
                 <div style={{ width: '1px', height: '48px', background: 'rgba(255, 255, 255, 0.2)' }} />
 
-                {/* Navigation Arrows (Inverted T Layout) */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                    {/* Top Row: Up Arrow */}
+                {/* Navigation Arrows (Cross Layout + Side Nav) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+
+                    {/* Previous Image Button */}
                     <button
-                        onMouseDown={() => startRotation('up')}
-                        onMouseUp={stopRotation}
-                        onMouseLeave={stopRotation}
-                        onTouchStart={() => startRotation('up')}
-                        onTouchEnd={stopRotation}
-                        style={arrowButtonStyle}
-                        aria-label="Look up"
+                        onClick={() => {
+                            console.log('Previous Image button clicked');
+                            previousImage();
+                        }}
+                        style={{ ...arrowButtonStyle, marginRight: '0.5rem' }}
+                        aria-label="Previous Image"
                     >
-                        <ChevronUp size={24} />
+                        <ChevronLeft size={24} />
                     </button>
 
-                    {/* Bottom Row: Prev, Down, Next */}
-                    <div style={{ display: 'flex', gap: '0.25rem' }}>
-                        {/* Previous Image Button */}
+                    {/* Rotation Controls (Cross) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                        {/* Top: Up */}
                         <button
-                            onClick={previousImage}
-                            style={arrowButtonStyle}
-                            aria-label="Previous Image"
-                        >
-                            <ChevronLeft size={24} />
-                        </button>
-
-                        {/* Look Down Button */}
-                        <button
-                            onMouseDown={() => startRotation('down')}
+                            onMouseDown={() => startRotation('up')}
                             onMouseUp={stopRotation}
                             onMouseLeave={stopRotation}
-                            onTouchStart={() => startRotation('down')}
+                            onTouchStart={() => startRotation('up')}
                             onTouchEnd={stopRotation}
                             style={arrowButtonStyle}
-                            aria-label="Look down"
+                            aria-label="Look up"
                         >
-                            <ChevronDown size={24} />
+                            <ChevronUp size={24} />
                         </button>
 
-                        {/* Next Image Button */}
-                        <button
-                            onClick={nextImage}
-                            style={arrowButtonStyle}
-                            aria-label="Next Image"
-                        >
-                            <ChevronRight size={24} />
-                        </button>
+                        {/* Middle: Left, Down, Right */}
+                        <div style={{ display: 'flex', gap: '0.25rem' }}>
+                            <button
+                                onMouseDown={() => startRotation('left')}
+                                onMouseUp={stopRotation}
+                                onMouseLeave={stopRotation}
+                                onTouchStart={() => startRotation('left')}
+                                onTouchEnd={stopRotation}
+                                style={arrowButtonStyle}
+                                aria-label="Look left"
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+
+                            <button
+                                onMouseDown={() => startRotation('down')}
+                                onMouseUp={stopRotation}
+                                onMouseLeave={stopRotation}
+                                onTouchStart={() => startRotation('down')}
+                                onTouchEnd={stopRotation}
+                                style={arrowButtonStyle}
+                                aria-label="Look down"
+                            >
+                                <ChevronDown size={24} />
+                            </button>
+
+                            <button
+                                onMouseDown={() => startRotation('right')}
+                                onMouseUp={stopRotation}
+                                onMouseLeave={stopRotation}
+                                onTouchStart={() => startRotation('right')}
+                                onTouchEnd={stopRotation}
+                                style={arrowButtonStyle}
+                                aria-label="Look right"
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Next Image Button */}
+                    <button
+                        onClick={() => {
+                            console.log('Next Image button clicked');
+                            nextImage();
+                        }}
+                        style={{ ...arrowButtonStyle, marginLeft: '0.5rem' }}
+                        aria-label="Next Image"
+                    >
+                        <ChevronRight size={24} />
+                    </button>
                 </div>
             </div>
 
@@ -161,6 +190,7 @@ export const ArrowControls = () => {
                     <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
                         <div style={{ marginBottom: '0.5rem' }}>← → : Rotate view left/right</div>
                         <div style={{ marginBottom: '0.5rem' }}>↑ ↓ : Look up/down</div>
+                        <div style={{ marginBottom: '0.5rem' }}>&lt; &gt; : Previous/Next Image</div>
                         <div style={{ marginBottom: '0.5rem' }}>+ - : Zoom in/out</div>
                         <div style={{ marginBottom: '0.5rem' }}>▶ : Auto-rotate camera</div>
                     </div>

@@ -116,16 +116,32 @@ export const useTourState = create<TourState>((set, get) => ({
   },
   previousImage: () => {
     const state = get();
-    if (!state.manifest || !state.currentBlockId || !state.currentImageId) return;
+    console.log('previousImage called', {
+      hasManifest: !!state.manifest,
+      blockId: state.currentBlockId,
+      imageId: state.currentImageId
+    });
+
+    if (!state.manifest || !state.currentBlockId || !state.currentImageId) {
+      console.warn('Missing state for previousImage');
+      return;
+    }
 
     const currentBlock = state.manifest.blocks.find((b: any) => b.id === state.currentBlockId);
-    if (!currentBlock || !currentBlock.labs) return;
+    if (!currentBlock || !currentBlock.labs) {
+      console.warn('Block or labs not found');
+      return;
+    }
 
     const currentIndex = currentBlock.labs.findIndex((lab: any) => lab.id === state.currentImageId);
-    if (currentIndex === -1) return;
+    if (currentIndex === -1) {
+      console.warn('Current image index not found');
+      return;
+    }
 
     const prevIndex = currentIndex === 0 ? currentBlock.labs.length - 1 : currentIndex - 1;
     const prevImageId = currentBlock.labs[prevIndex].id;
+    console.log('Switching to previous image:', prevImageId);
 
     get().setImage(prevImageId);
   },
